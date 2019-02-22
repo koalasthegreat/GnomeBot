@@ -21,6 +21,8 @@ async def on_ready():
 
 @bot.command()
 async def play(ctx):
+    """Plays an audio clip in your voice channel."""
+    
     def disconnect(error):
         coroutine = connection.disconnect()
         future = asyncio.run_coroutine_threadsafe(coroutine, bot.loop)
@@ -49,6 +51,8 @@ async def play(ctx):
 
 @bot.command()
 async def laugh(ctx):
+    """Makes the bot laugh in your voice channel."""
+
     def disconnect(error):
         coroutine = connection.disconnect()
         future = asyncio.run_coroutine_threadsafe(coroutine, bot.loop)
@@ -73,14 +77,18 @@ async def laugh(ctx):
 
 @bot.command()
 async def clips(ctx):
+    """Lists all clips available for playback."""
+
     c = ''
     for i in clipList:
         c += str(i) + '\n'
-    await ctx.send("The clips I can play are:\n" + c)
+    await ctx.send("```The clips I can play are:\n" + c + "```")
 
 
 @bot.command()
 async def leave(ctx):
+    """Gracefully shuts the bot down."""
+
     person = ctx.author
 
     if person.id == 153935534207533056:
