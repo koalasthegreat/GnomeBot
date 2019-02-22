@@ -1,6 +1,7 @@
 import discord
 import os
 import sys
+import asyncio
 from time import sleep
 from discord.ext import commands
 
@@ -20,6 +21,15 @@ async def on_ready():
 
 @bot.command()
 async def play(ctx):
+    def disconnect(error):
+        coroutine = connection.disconnect()
+        future = asyncio.run_coroutine_threadsafe(coroutine, bot.loop)
+        try:
+            future.result()
+        except:
+            print("Error disconnecting")
+            pass
+
     voice = ctx.author.voice
 
     if voice is None:
@@ -30,20 +40,24 @@ async def play(ctx):
                 playing = True
 
                 clip = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("clips/" + str(i) + ".mp3"), volume=0.1)
-                client = await voice.channel.connect()
-                client.play(clip)
+                connection = await voice.channel.connect()
+                connection.play(clip, after=disconnect)
 
-                while playing:
-                    sleep(0.25)
-                    if not client.is_playing():
-                        await client.disconnect()
-                        playing = False
                 return
         await ctx.send("I can't seem to find that clip.")
 
 
 @bot.command()
 async def laugh(ctx):
+    def disconnect(error):
+        coroutine = connection.disconnect()
+        future = asyncio.run_coroutine_threadsafe(coroutine, bot.loop)
+        try:
+            future.result()
+        except:
+            print("Error disconnecting")
+            pass
+
     voice = ctx.author.voice
     await ctx.send("**HOOOH**")
 
@@ -53,13 +67,9 @@ async def laugh(ctx):
         playing = True
 
         clip = discord.FFmpegPCMAudio('hooh.mp3')
-        client = await voice.channel.connect()
-        client.play(clip)
+        connection = await voice.channel.connect()
+        play = connection.play(clip, after=disconnect)
 
-        while playing:
-            if not client.is_playing():
-                await client.disconnect()
-                playing = False
 
 @bot.command()
 async def clips(ctx):
